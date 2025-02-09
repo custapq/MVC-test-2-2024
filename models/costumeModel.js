@@ -83,10 +83,28 @@ async function repairCostume(id) {
   });
 }
 
+async function updateCostumeReady(id, durability, costumeTypeId) {
+  // อัพเดท isReady ของชุดว่าต้องซ่อมหรือไม่
+  // console.log(costumeTypeId, durability);
+  const isReady =
+    (costumeTypeId === 1 && durability <= 70) ||
+    (costumeTypeId === 2 && durability <= 50) ||
+    (costumeTypeId === 3 && (durability % 10 === 3 || durability % 10 === 7));
+
+  return await prisma.costume.update({
+    where: { Id: Number(id) },
+    data: {
+      durability: parseInt(durability),
+      isReady: isReady,
+    },
+  });
+}
+
 module.exports = {
   getCostume,
   updateCostume,
   getCostumes,
   getRepairedCostumeCountByType,
   repairCostume,
+  updateCostumeReady,
 };

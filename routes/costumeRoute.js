@@ -7,6 +7,7 @@ router.get("/api/costumes", costumeController.getCostumes); //เรียกข
 router.get("/api/costume/:id", costumeController.getCostume); //เรียกข้อมูลชุดตาม id
 router.get("/api/repairCount/", costumeController.getRepairCount); //เรียกข้อมูลชุดที่ซ่อมแล้วแบ่งตามประเภทชุด
 router.put("/api/repair/:id", costumeController.repairCostume); //อัปเดทโดยซ่อมชุดตาม id
+router.put("/api/updateCostume/:id", costumeController.updateCostume); //อัปเดทสถานะของชุด
 
 // route สำหรับ view costume
 router.get("/", costumeController.getViewCostume);

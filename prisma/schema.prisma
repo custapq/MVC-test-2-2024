@@ -8,10 +8,11 @@ datasource db {
 }
 
 model Costume {
-  Id            Int         @id // เลข 6 หลัก ห้าม 0 นำหน้า
+  Id            Int         @id
   costumeTypeId Int
-  durability    Int //ความคงทน
-  isRepaired    Boolean //เก็บว่าถูกซ่อมรึยัง
+  durability    Int
+  isRepaired    Boolean
+  isReady       Boolean     @default(false) // ฟิลด์ใหม่เพื่อแสดงสถานะความพร้อม
   costumeType   CostumeType @relation(fields: [costumeTypeId], references: [id])
 }
 

@@ -39,6 +39,9 @@
         <p class="mb-2">
           <strong>สถานะการซ่อม:</strong> <span id="costume-repair"></span>
         </p>
+        <p class="mb-2">
+          <strong>ความพร้อมใช้งาน:</strong> <span id="costume-ready"></span>
+        </p>
       </div>
       <button
         type="button"
@@ -57,10 +60,14 @@
   async function fetchCostumeData(id) {
     // สร้าง function สำหรับดึงข้อมูลชุด
     try {
-      const response = await fetch(`/api/costume/${id}`); // ส่ง request ไปที่ api ด้วย id ที่รับมา
-      if (response.status === 400) {// ตรวจสอบความถูกต้องของ id
+      const response = await fetch(`/api/costume/${id}`);
+      const resUpdate = await fetch(`/api/updateCostume/${id}`, {
+        method: "PUT",
+      }); // ส่ง request ไปที่ api ด้วย id ที่รับมา
+      if (response.status === 400) {
+        // ตรวจสอบความถูกต้องของ id
         alert("code ต้อง 6 หลักและห้ามขึ้นต้นด้วย 0");
-      } else if (response.status === 404) alert("ไม่พบชุด"); 
+      } else if (response.status === 404) alert("ไม่พบชุด");
       const data = await response.json();
 
       if (data) {
@@ -75,6 +82,13 @@
         document.getElementById("costume-repair").textContent = data.isRepaired
           ? "ซ่อมแล้ว"
           : "ยังไม่ซ่อม";
+        document.getElementById("costume-ready").textContent = data.isReady
+          ? "พร้อมใช้งาน"
+          : "ต้องซ้อม";
+        console.log(data.isReady);
+        document
+          .getElementById("repairButton")
+          .classList.toggle("hidden", data.isReady);
       }
     } catch (error) {
       console.error("Error fetching costume data:", error);
