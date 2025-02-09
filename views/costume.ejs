@@ -58,9 +58,9 @@
     // สร้าง function สำหรับดึงข้อมูลชุด
     try {
       const response = await fetch(`/api/costume/${id}`); // ส่ง request ไปที่ api ด้วย id ที่รับมา
-      if (response.status === 400) {
+      if (response.status === 400) {// ตรวจสอบความถูกต้องของ id
         alert("code ต้อง 6 หลักและห้ามขึ้นต้นด้วย 0");
-      } // ตรวจสอบความถูกต้องของ id
+      } else if (response.status === 404) alert("ไม่พบชุด"); 
       const data = await response.json();
 
       if (data) {
