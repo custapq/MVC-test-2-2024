@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>คัดกรองชุดสำหรับซุปเปอร์ฮีโร่</title>
+    <!-- ใช้ tailwind css เพื่อช่วยตกแต่ง -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" 
+      rel="stylesheet"
+    />
+    
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-6"><%- body %></div> 
+    </div>
+    <div class="container mx-auto bg-white rounded-lg p-6">
+        <h2 class="text-xl font-bold mb-4">รายการประเภทเครื่องแต่งกายที่ต้องซ่อม</h2>
+        <!-- สร้างตารางเพื่อแสดงข้อมูลประเภทเครื่องแต่งกายที่ต้องซ่อม -->
+        <table class="w-full border-collapse border ">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border px-4 py-2">ประเภทเครื่องแต่งกาย</th>
+              <th class="border px-4 py-2">จำนวน</th>
+            </tr>
+          </thead>
+          <tbody id="repaired-costume-table-body">
+            <!-- วน loop เพื่อแสดงข้อมูลจำนวนชุดที่ซ่อมแล้ว -->
+            <% repairedCostumes.forEach(costume => { %> 
+              <tr>
+                <td class="border px-4 py-2"><%= costume.costumeTypeName %></td>
+                <td class="border px-4 py-2"><%= costume.count %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      
+  </body>
+</html>

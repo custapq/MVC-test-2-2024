@@ -7,10 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  age       Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Costume {
+  Id            Int         @id // เลข 6 หลัก ห้าม 0 นำหน้า
+  costumeTypeId Int
+  durability    Int //ความคงทน
+  isRepaired    Boolean //เก็บว่าถูกซ่อมรึยัง
+  costumeType   CostumeType @relation(fields: [costumeTypeId], references: [id])
+}
+
+model CostumeType {
+  id      Int       @id @default(autoincrement())
+  name    String // ทรงพลัง ลอบเร้น ปกปิดตัวตน
+  costume Costume[]
 }

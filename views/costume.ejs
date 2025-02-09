@@ -1,0 +1,141 @@
+<%- contentFor('body') %>
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded px-8 pt-6 pb-8 mb-4">
+    <h2 class="text-2xl font-bold mb-6">ค้นหาชุด</h2>
+    <!-- สร้าง form สำหรับค้าหาชุดตาม id  -->
+    <form id="searchForm" class="mb-6">
+      <div class="mb-4">
+        <label
+          class="block text-gray-700 text-sm font-bold mb-2"
+          for="costumeId"
+        >
+          กรอก code ของชุด
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+          id="costumeId"
+          type="number"
+          placeholder="กรอกรหัส 6 หลัก"
+        />
+      </div>
+      <button
+        type="submit"
+        class="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+      >
+        ค้นหา
+      </button>
+    </form>
+    <!-- ให้แสดงผลการค้นหา แต่ให้ซ่อนไว้รอผลการค้นหาก่อน -->
+    <div id="result" class="hidden">
+      <h3 class="text-xl font-bold mb-4">ข้อมูลเครื่องแต่งกาย</h3>
+      <div class="border rounded p-4">
+        <p class="mb-2"><strong>รหัส:</strong> <span id="costume-id"></span></p>
+        <p class="mb-2">
+          <strong>ประเภท:</strong> <span id="costume-type"></span>
+        </p>
+        <p class="mb-2">
+          <strong>ความทนทาน:</strong> <span id="costume-durability"></span>
+        </p>
+        <p class="mb-2">
+          <strong>สถานะการซ่อม:</strong> <span id="costume-repair"></span>
+        </p>
+      </div>
+      <button
+        type="button"
+        id="repairButton"
+        class="mt-4 bg-red-500 text-white font-bold py-2 px-4 rounded"
+      >
+        ซ่อม
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentCostumeId; // global var สำหรับเก็บ id ของชุดที่ค้นหา
+
+  async function fetchCostumeData(id) {
+    // สร้าง function สำหรับดึงข้อมูลชุด
+    try {
+      const response = await fetch(`/api/costume/${id}`); // ส่ง request ไปที่ api ด้วย id ที่รับมา
+      if (response.status === 400) {
+        alert("code ต้อง 6 หลักและห้ามขึ้นต้นด้วย 0");
+      } // ตรวจสอบความถูกต้องของ id
+      const data = await response.json();
+
+      if (data) {
+        // ถ้ามีข้อมูลให้แสดงผลขึ้นมาโดยลบ class hidden
+        currentCostumeId = data.Id;
+        document.getElementById("result").classList.remove("hidden");
+        document.getElementById("costume-id").textContent = data.Id;
+        document.getElementById("costume-type").textContent =
+          data.costumeType.name;
+        document.getElementById("costume-durability").textContent =
+          data.durability;
+        document.getElementById("costume-repair").textContent = data.isRepaired
+          ? "ซ่อมแล้ว"
+          : "ยังไม่ซ่อม";
+      }
+    } catch (error) {
+      console.error("Error fetching costume data:", error);
+    }
+  }
+
+  async function repairCostume() {
+    // สร้าง function สำหรับซ่อมชุด
+    if (!currentCostumeId) {
+      alert("ไม่พบชุด");
+      return;
+    } // ตรวจสอบว่ามี id ของชุดหรือไม่
+
+    try {
+      const response = await fetch(`/api/repair/${currentCostumeId}`, {
+        method: "PUT",
+      }); // ส่ง request ไปที่ api โดยใช้ method PUT เพื่อ update ข้อมูล
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("ซ่อมสำเร็จ");
+        fetchCostumeData(currentCostumeId);
+        updateRepairedCostumesTable();
+      } else {
+        alert("error : " + data.message);
+      }
+    } catch (error) {
+      console.error("Error repairing costume:", error);
+      alert("เกิด error ในการซ่อม");
+    }
+  }
+
+  async function updateRepairedCostumesTable() {
+    // สร้าง function สำหรับ update ข้อมูลในตารางแสดงจำนวนชุดที่ซ่อมแล้ว
+    try {
+      const response = await fetch("/api/repairCount"); // ส่ง request ไปที่ api เพื่อดึงข้อมูลจำนวนชุดที่ซ่อมแล้ว
+      const repairedCostumes = await response.json();
+      const tbody = document.getElementById("repaired-costume-table-body"); // เข้าถึง tbody ของตาราง
+      tbody.innerHTML = "";
+
+      repairedCostumes.forEach((costume) => {
+        // วน loop เพื่อแสดงข้อมูลในตาราง
+        const row = `<tr>
+          <td class="border px-4 py-2">${costume.costumeTypeName}</td>
+          <td class="border px-4 py-2">${costume.count}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    } catch (error) {
+      console.error("error :", error);
+    }
+  }
+
+  document.getElementById("searchForm").addEventListener("submit", (e) => {
+    // เมื่อกด submit form ให้ดึงข้อมูลชุด
+    e.preventDefault();
+    const id = document.getElementById("costumeId").value;
+    fetchCostumeData(id);
+  });
+
+  document
+    .getElementById("repairButton")
+    .addEventListener("click", repairCostume); // เมื่อกดปุ่ม ซ่อม ให้เรียก function ซ่อมชุด
+</script>
